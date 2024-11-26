@@ -36,7 +36,7 @@
                                 </form>
                                 <label for="todo1" class="ml-3 block text-gray-900 dark:text-gray-100 @if($todo->completed) line-through @endif">
                                     <span class="text-lg font-medium">{{ $todo->title }}</span>
-                                    <span class="text-sm font-light text-gray-500 dark:text-gray-400">Due on 4/1/23</span>
+{{--                                    <span class="text-sm font-light text-gray-500 dark:text-gray-400">Due on 4/1/23</span>--}}
                                 </label>
                             </div>
                         </div>
