@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Todo;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -14,7 +15,7 @@ class CategoryController extends Controller
     public function index()
     {
         //
-        return view('category.index', ['categories' => auth()->user()->categories]);
+        return view('category.index', ['categories' => auth()->user()->categories, 'all' => Todo::all()]);
     }
 
     /**
@@ -34,7 +35,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|max:50',
         ]);
-        Category::create($validated);
+        $request->user()->categories()->create($validated);
 
         return redirect()->back();
     }
@@ -69,5 +70,7 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         //
+        $category->delete();
+        return redirect()->back();
     }
 }

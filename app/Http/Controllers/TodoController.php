@@ -34,14 +34,9 @@ class TodoController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:50',
         ]);
-        $category->todos()->create([
-            'user_id' => auth()->id(),
-            'title' => $validated['title'],
-        ]);
+        $category->todos()->create($validated);
+
         return redirect()->back();
-//
-//        $request->user()->todos()->create($validated);
-//        return redirect()->route('todos.index');
     }
 
     /**
@@ -77,8 +72,10 @@ class TodoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Todo $todo)
+    public function destroy(Category $category, Todo $todo)
     {
         //
+        $todo->delete();
+        return redirect()->back();
     }
 }
