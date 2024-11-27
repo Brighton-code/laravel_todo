@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
             ->create([
             'name' => 'Brighton',
             'email' => 'brighton@vanrouendal.nl',
-            'password' => Hash::make('password'),
         ]);
         User::factory(10)
             ->has(Category::factory(rand(2,4))
