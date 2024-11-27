@@ -78,7 +78,7 @@
                 const popup_id = popup_id_el.innerText;
                 if (popup_id == id) {
                     button.click();
-                    return
+                    return false;
                 }
             }
             console.log("fetching data")
