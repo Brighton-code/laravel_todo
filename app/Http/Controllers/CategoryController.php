@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Todo;
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -54,6 +55,8 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         //
+        Gate::authorize('update', $category);
+
         return view('category.edit', ['category' => $category]);
     }
 
@@ -63,6 +66,8 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         //
+        Gate::authorize('update', $category);
+
         $validated = $request->validate([
             'name' => 'required|max:50',
         ]);
@@ -76,6 +81,8 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         //
+        Gate::authorize('delete', $category);
+
         $category->delete();
         return redirect()->back();
     }
