@@ -15,7 +15,7 @@ class CategoryController extends Controller
     public function index()
     {
         //
-        return view('category.index', ['categories' => auth()->user()->categories, 'all' => Todo::all()]);
+        return view('category.index', ['categories' => auth()->user()->categories]);
     }
 
     /**
@@ -54,6 +54,7 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         //
+        return view('category.edit', ['category' => $category]);
     }
 
     /**
@@ -62,6 +63,11 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         //
+        $validated = $request->validate([
+            'name' => 'required|max:50',
+        ]);
+        $category->update($validated);
+        return redirect()->route('category.index');
     }
 
     /**
