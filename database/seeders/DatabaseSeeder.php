@@ -28,5 +28,9 @@ class DatabaseSeeder extends Seeder
             ->has(Category::factory(rand(2,4))
                 ->has(Todo::factory(rand(5, 21))))
             ->create();
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
     }
 }
