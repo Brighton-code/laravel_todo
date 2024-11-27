@@ -36,7 +36,7 @@ class CategoryController extends Controller
         ]);
         $request->user()->categories()->create($validated);
 
-        return redirect()->back();
+        return redirect()->route('category.index');
     }
 
     /**
