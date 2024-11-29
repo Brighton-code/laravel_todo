@@ -81,4 +81,98 @@ class CategoryTest extends TestCase
 
         $this->assertDatabaseMissing('categories', ['user_id' => $user->id]);
     }
+
+    public function test_root(): void
+    {
+        $response = $this->get('/');
+        $response->assertStatus(200);
+    }
+
+    public function test_category_root(): void
+    {
+        $user = User::factory()->has(Category::factory(2))->create();
+        $response = $this->actingAs($user)
+            ->get(route('category.index'));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('category.index');
+        $response->assertSee($user->categories()->first()->name);
+    }
+
+    public function test_category_create(): void
+    {
+        $user = User::factory()->create();
+        $postData = [
+            'name' => 'test_category_create',
+        ];
+
+        $response = $this->actingAs($user)
+            ->post(route('category.store'), $postData);
+
+        $response->assertStatus(302);
+        $response->assertRedirect(route('category.index'));
+        $this->assertDatabaseHas('categories', [
+            'user_id' => $user->id,
+            'name' => $postData['name'],
+        ]);
+    }
+
+    public function test_category_update(): void
+    {
+        $user = User::factory()->has(Category::factory())->create();
+        $category = $user->categories()->first();
+        $postData = [
+            'name' => 'test_category_update',
+        ];
+        $response = $this->actingAs($user)
+            ->put(route('category.update', $category->id), $postData);
+
+        $response->assertStatus(302);
+        $response->assertRedirect(route('category.index'));
+        $this->assertDatabaseHas('categories', [
+            'id' => $category->id,
+            'user_id' => $user->id,
+            'name' => $postData['name'],
+        ]);
+    }
+
+    public function test_category_delete(): void
+    {
+        $user = User::factory()->has(Category::factory())->create();
+        $category = $user->categories()->first();
+        $response = $this->actingAs($user)
+            ->delete(route('category.destroy', $category->id));
+
+        $response->assertStatus(302);
+        $response->assertRedirect(route('category.index'));
+        $this->assertDatabaseMissing('categories', ['id' => $category->id]);
+    }
+
+    public function test_user_cannot_edit_other_user_category(): void
+    {
+        $user1 = User::factory()->has(Category::factory())->create();
+        $user2 = User::factory()->create();
+        $post = $user1->categories()->first();
+
+        $postData = [
+            'name' => 'test_category_update',
+        ];
+
+        $response = $this->actingAs($user2)
+            ->put(route('category.update', $post->id), $postData);
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('categories', ['id' => $post->id, 'name' => $post->name, 'user_id' => $user1->id]);
+    }
+
+    public function test_user_cannot_delete_other_user_category(): void
+    {
+        $user1 = User::factory()->has(Category::factory())->create();
+        $user2 = User::factory()->create();
+        $post = $user1->categories()->first();
+
+        $response = $this->actingAs($user2)
+            ->delete(route('category.destroy', $post->id));
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('categories', ['id' => $post->id, 'name' => $post->name, 'user_id' => $user1->id]);
+    }
 }

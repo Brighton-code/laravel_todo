@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Todo;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 
 class TodoController extends Controller
@@ -14,6 +15,8 @@ class TodoController extends Controller
     public function index(Category $category)
     {
         //
+        Gate::authorize('view', [Todo::class, $category]);
+
         return view('todos.index', ['todos' => $category->todos()->get(), 'category' => $category]);
     }
 
@@ -31,12 +34,14 @@ class TodoController extends Controller
     public function store(Request $request, Category $category)
     {
         //
+        Gate::authorize('create', [Todo::class, $category]);
+
         $validated = $request->validate([
             'title' => 'required|string|max:50',
         ]);
         $category->todos()->create($validated);
 
-        return redirect()->back();
+        return redirect()->route('todos.index', $category);
     }
 
     /**
@@ -61,12 +66,14 @@ class TodoController extends Controller
     public function update(Request $request, Category $category, Todo $todo)
     {
         //
+        Gate::authorize('update', $todo);
+
         if ($request->has('_completed')) {
             $todo->update([
                 'completed' => $request->has('completed')
             ]);
         }
-        return redirect()->back();
+        return redirect()->route('todos.index', $category);
     }
 
     /**
@@ -75,7 +82,9 @@ class TodoController extends Controller
     public function destroy(Category $category, Todo $todo)
     {
         //
+        Gate::authorize('delete', $todo);
+
         $todo->delete();
-        return redirect()->back();
+        return redirect()->route('todos.index', $category);
     }
 }

@@ -20,9 +20,9 @@ class TodoPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Todo $todo): bool
+    public function view(User $user, Category $category): bool
     {
-        return false;
+        return $this->create($user, $category);
     }
 
     /**
@@ -38,7 +38,7 @@ class TodoPolicy
      */
     public function update(User $user, Todo $todo): bool
     {
-        return $todo->category()->user->is($user);
+        return $todo->category()->first()->user()->is($user);
     }
 
     /**

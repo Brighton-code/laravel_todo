@@ -82,6 +82,6 @@ class CategoryController extends Controller
         Gate::authorize('delete', $category);
 
         $category->delete();
-        return redirect()->back();
+        return redirect()->route('category.index');
     }
 }
